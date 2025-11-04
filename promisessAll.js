@@ -9,19 +9,32 @@ async function getDashboardData(query) {
   const aeroporto = fetch(`${link}airports?search=${query}`)
 
   // pomise.all
-  const response = await Promise.all([nome, meteo, aeroporto]);
-  // converto in json 
-  const data = await Promise.all(response.map(res => res.json()));
-  const [destinazione, meteoData, aeroportoData] = data;
+  try {
+    const response = await Promise.all([nome, meteo, aeroporto]);
+    // converto in json 
+    const data = await Promise.all(response.map(res => res.json()));
+    const [destinazione, meteoData, aeroportoData] = data;
+    // creo oggetto data da restituire  
 
-  // creo oggetto data da restituire  
-  return {
-    city: destinazione[0].name,
-    country: destinazione[0].country,
-    temperature: meteoData[0].temperature,
-    weather: meteoData[0].weather_description,
-    airport: aeroportoData[0].name
-  };
+    const citta = destinazione[0]
+    const temperatura = meteoData[0];
+    const aeroportod = aeroportoData[0]
+
+
+
+    return {
+      city: citta ? citta.name : null,
+      country: citta ? citta.country : null,
+      temperature: temperatura ? temperatura.temperature : null,
+      weather: temperatura ? temperatura.weather_description : null,
+      airport: aeroportod ? aeroportod.name : null
+    };
+
+  } catch (error) {
+    throw new Error(`Richiesta al server fallita: ${error.message}`);
+  }
+
+
 }
 
 
@@ -36,3 +49,6 @@ getDashboardData('london')
     );
   })
   .catch(error => console.error(error));
+
+
+console.log("fine codice")
