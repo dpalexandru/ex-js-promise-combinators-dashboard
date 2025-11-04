@@ -14,12 +14,13 @@ async function getDashboardData(query) {
   const data = await Promise.all(response.map(res => res.json()));
   const [destinazione, meteoData, aeroportoData] = data;
 
-
   // creo oggetto data da restituire  
   return {
-    destination: destinazione,
-    weather: meteoData,
-    airport: aeroportoData
+    city: destinazione[0].name,
+    country: destinazione[0].country,
+    temperature: meteoData[0].temperature,
+    weather: meteoData[0].weather_description,
+    airport: aeroportoData[0].name
   };
 }
 
@@ -27,15 +28,11 @@ async function getDashboardData(query) {
 //uso la funzione 
 getDashboardData('london')
   .then(data => {
-    const dest = data.destination[0];
-    const meteo = data.weather[0];
-    const apt = data.airport[0];
-
-    console.log('Dashboard data:', data.destination[0].name);
+    console.log('Dasboard data:', data);
     console.log(
-      `${dest.name} is in ${dest.country}.\n` +
-      `Today there are ${meteo.temperature} degrees and the weather is ${meteo.weather_description}.\n` +
-      `The main airport is ${apt.name}.\n`
+      `${data.city} is in ${data.country}.\n` +
+      `Today there are ${data.temperature} degrees and the weather is ${data.weather}.\n` +
+      `The main airport is ${data.airport}.\n`
     );
   })
-  .catch(console.error);
+  .catch(error => console.error(error));
