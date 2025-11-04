@@ -39,14 +39,24 @@ async function getDashboardData(query) {
 
 
 //uso la funzione 
-getDashboardData('london')
+getDashboardData('vienna')
   .then(data => {
+
+    let frase = ""
+
+    if (data.city && data.country) {
+      frase += `${data.city} is in ${data.country}.\n`
+    }
+
+    if (data.temperature && data.weather) {
+      frase += `Today there are ${data.temperature} degrees and the weather is ${data.weather}.\n`
+    }
+    if (data.airport) {
+      frase += `The main airport is ${data.airport}.\n`
+    }
+
     console.log('Dasboard data:', data);
-    console.log(
-      `${data.city} is in ${data.country}.\n` +
-      `Today there are ${data.temperature} degrees and the weather is ${data.weather}.\n` +
-      `The main airport is ${data.airport}.\n`
-    );
+    console.log(frase);
   })
   .catch(error => console.error(error));
 
