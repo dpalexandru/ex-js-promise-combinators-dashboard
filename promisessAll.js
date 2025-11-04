@@ -10,17 +10,30 @@ async function getDashboardData(query) {
 
   // pomise.all
   try {
-    const response = await Promise.all([nome, meteo, aeroporto]);
-    // converto in json 
-    const data = await Promise.all(response.map(res => res.json()));
+    const response = await Promise.allSettled([nome, meteo, aeroporto]);
+    // filtro per riuscite converto in json 
+    const fulfilled = response
+      .filter(r => r.status === "fulfilled")
+      .map(r => r.value);
+
+    const data = await Promise.all(fulfilled.map(res => res.json()));
     const [destinazione, meteoData, aeroportoData] = data;
+
+
+
+    response.forEach((r, i) => {
+      if (r.value.status == 404) {
+        const nomeChiamata = ["destinations", "weathers", "airports"][i];
+        console.warn(`Errore nella chiamata ${nomeChiamata}`);
+      }
+    });
+
+
     // creo oggetto data da restituire  
 
     const citta = destinazione[0]
     const temperatura = meteoData[0];
     const aeroportod = aeroportoData[0]
-
-
 
     return {
       city: citta ? citta.name : null,
@@ -33,8 +46,6 @@ async function getDashboardData(query) {
   } catch (error) {
     throw new Error(`Richiesta al server fallita: ${error.message}`);
   }
-
-
 }
 
 
@@ -61,4 +72,3 @@ getDashboardData('vienna')
   .catch(error => console.error(error));
 
 
-console.log("fine codice")
